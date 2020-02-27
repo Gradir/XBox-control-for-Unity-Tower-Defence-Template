@@ -1,7 +1,7 @@
+using Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Utilities;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Debug = System.Diagnostics.Debug;
@@ -137,16 +137,25 @@ namespace Core.Input
 		/// </summary>
 		public event Action<PointerInfo> mouseMoved;
 
+		public bool isAnyControllerConnected;
+		private const string ps4ConnectedString = "PS4 CONTROLLER IS CONNECTED";
+		private const string xBoxConnectedString = "XBOX CONTROLLER IS CONNECTED";
+
 		protected override void Awake()
 		{
 			base.Awake();
 			m_Touches = new List<TouchInfo>();
 
+			if (isAnyControllerConnected)
+			{
+
+			}
+
 			// Mouse specific initialization
 			if (UnityInput.mousePresent)
 			{
 				m_MouseInfo = new List<MouseButtonInfo>();
-				basicMouseInfo = new MouseCursorInfo {currentPosition = UnityInput.mousePosition};
+				basicMouseInfo = new MouseCursorInfo { currentPosition = UnityInput.mousePosition };
 
 				for (int i = 0; i < trackMouseButtons; ++i)
 				{
@@ -166,315 +175,327 @@ namespace Core.Input
 		/// </summary>
 		void Update()
 		{
-			if (basicMouseInfo != null)
+			string[] names = UnityInput.GetJoystickNames();
+			for (int x = 0; x < names.Length; x++)
 			{
-				// Mouse was detected as present
-				UpdateMouse();
-			}
-			// Handle touches
-			UpdateTouches();
-		}
-
-		/// <summary>
-		/// Perform logic to update mouse/pointing device
-		/// </summary>
-		void UpdateMouse()
-		{
-			basicMouseInfo.previousPosition = basicMouseInfo.currentPosition;
-			basicMouseInfo.currentPosition = UnityInput.mousePosition;
-			basicMouseInfo.delta = basicMouseInfo.currentPosition - basicMouseInfo.previousPosition;
-			mouseMovedOnThisFrame = basicMouseInfo.delta.sqrMagnitude >= Mathf.Epsilon;
-			mouseButtonPressedThisFrame = false;
-
-			// Move event
-			if (basicMouseInfo.delta.sqrMagnitude > Mathf.Epsilon)
-			{
-				if (mouseMoved != null)
+				print(names[x].Length);
+				// 19 = PS4, 33 = Xbox
+				if (names[x].Length == 19 || names[x].Length == 33)
 				{
-					mouseMoved(basicMouseInfo);
+					isAnyControllerConnected = true;
+					print(string.Format("<color=blue><b>{0}</b></color>", ps4ConnectedString));
 				}
-			}
-			// Button events
-			for (int i = 0; i < trackMouseButtons; ++i)
-			{
-				MouseButtonInfo mouseButton = m_MouseInfo[i];
-				mouseButton.delta = basicMouseInfo.delta;
-				mouseButton.previousPosition = basicMouseInfo.previousPosition;
-				mouseButton.currentPosition = basicMouseInfo.currentPosition;
-				if (UnityInput.GetMouseButton(i))
+
+				if (basicMouseInfo != null)
 				{
-					if (!mouseButton.isDown)
+					// Mouse was detected as present
+					UpdateMouse();
+				}
+				// Handle touches
+				UpdateTouches();
+			}
+
+			/// <summary>
+			/// Perform logic to update mouse/pointing device
+			/// </summary>
+			void UpdateMouse()
+			{
+				basicMouseInfo.previousPosition = basicMouseInfo.currentPosition;
+				basicMouseInfo.currentPosition = UnityInput.mousePosition;
+				basicMouseInfo.delta = basicMouseInfo.currentPosition - basicMouseInfo.previousPosition;
+				mouseMovedOnThisFrame = basicMouseInfo.delta.sqrMagnitude >= Mathf.Epsilon;
+				mouseButtonPressedThisFrame = false;
+
+				// Move event
+				if (basicMouseInfo.delta.sqrMagnitude > Mathf.Epsilon)
+				{
+					if (mouseMoved != null)
 					{
-						// First press
-						mouseButtonPressedThisFrame = true;
-						mouseButton.isDown = true;
-						mouseButton.startPosition = UnityInput.mousePosition;
-						mouseButton.startTime = Time.realtimeSinceStartup;
-						mouseButton.startedOverUI = EventSystem.current.IsPointerOverGameObject(-mouseButton.mouseButtonId - 1);
-
-						// Reset some stuff
-						mouseButton.totalMovement = 0;
-						mouseButton.isDrag = false;
-						mouseButton.wasHold = false;
-						mouseButton.isHold = false;
-						mouseButton.flickVelocity = Vector2.zero;
-
-						if (pressed != null)
-						{
-							pressed(mouseButton);
-						}
+						mouseMoved(basicMouseInfo);
 					}
-					else
+				}
+				// Button events
+				for (int i = 0; i < trackMouseButtons; ++i)
+				{
+					MouseButtonInfo mouseButton = m_MouseInfo[i];
+					mouseButton.delta = basicMouseInfo.delta;
+					mouseButton.previousPosition = basicMouseInfo.previousPosition;
+					mouseButton.currentPosition = basicMouseInfo.currentPosition;
+					if (UnityInput.GetMouseButton(i))
 					{
-						float moveDist = mouseButton.delta.magnitude;
-						// Dragging?
-						mouseButton.totalMovement += moveDist;
-						if (mouseButton.totalMovement > dragThresholdMouse)
+						if (!mouseButton.isDown)
 						{
-							bool wasDrag = mouseButton.isDrag;
+							// First press
+							mouseButtonPressedThisFrame = true;
+							mouseButton.isDown = true;
+							mouseButton.startPosition = UnityInput.mousePosition;
+							mouseButton.startTime = Time.realtimeSinceStartup;
+							mouseButton.startedOverUI = EventSystem.current.IsPointerOverGameObject(-mouseButton.mouseButtonId - 1);
 
-							mouseButton.isDrag = true;
-							if (mouseButton.isHold)
-							{
-								mouseButton.wasHold = mouseButton.isHold;
-								mouseButton.isHold = false;
-							}
+							// Reset some stuff
+							mouseButton.totalMovement = 0;
+							mouseButton.isDrag = false;
+							mouseButton.wasHold = false;
+							mouseButton.isHold = false;
+							mouseButton.flickVelocity = Vector2.zero;
 
-							// Did it just start now?
-							if (!wasDrag)
+							if (pressed != null)
 							{
-								if (startedDrag != null)
-								{
-									startedDrag(mouseButton);
-								}
-							}
-							if (dragged != null)
-							{
-								dragged(mouseButton);
-							}
-
-							// Flick?
-							if (moveDist > flickThreshold)
-							{
-								mouseButton.flickVelocity =
-									(mouseButton.flickVelocity * (1 - k_FlickAccumulationFactor)) +
-									(mouseButton.delta * k_FlickAccumulationFactor);
-							}
-							else
-							{
-								mouseButton.flickVelocity = Vector2.zero;
+								pressed(mouseButton);
 							}
 						}
 						else
 						{
-							// Stationary?
-							if (!mouseButton.isHold &&
-							    !mouseButton.isDrag &&
-							    Time.realtimeSinceStartup - mouseButton.startTime >= holdTime)
+							float moveDist = mouseButton.delta.magnitude;
+							// Dragging?
+							mouseButton.totalMovement += moveDist;
+							if (mouseButton.totalMovement > dragThresholdMouse)
 							{
-								mouseButton.isHold = true;
-								if (startedHold != null)
+								bool wasDrag = mouseButton.isDrag;
+
+								mouseButton.isDrag = true;
+								if (mouseButton.isHold)
 								{
-									startedHold(mouseButton);
+									mouseButton.wasHold = mouseButton.isHold;
+									mouseButton.isHold = false;
 								}
-							}
-						}
-					}
-				}
-				else // Mouse button not up
-				{
-					if (mouseButton.isDown) // Released
-					{
-						mouseButton.isDown = false;
-						// Quick enough (with no drift) to be a tap?
-						if (!mouseButton.isDrag &&
-						    Time.realtimeSinceStartup - mouseButton.startTime < tapTime)
-						{
-							if (tapped != null)
-							{
-								tapped(mouseButton);
-							}
-						}
-						if (released != null)
-						{
-							released(mouseButton);
-						}
-					}
-				}
-			}
 
-			// Mouse wheel
-			if (Mathf.Abs(UnityInput.GetAxis("Mouse ScrollWheel")) > Mathf.Epsilon)
-			{
-				if (spunWheel != null)
-				{
-					spunWheel(new WheelInfo
-					{
-						zoomAmount = UnityInput.GetAxis("Mouse ScrollWheel") * mouseWheelSensitivity
-					});
-				}
-			}
-		}
-
-		/// <summary>
-		/// Update all touches
-		/// </summary>
-		void UpdateTouches()
-		{
-			touchPressedThisFrame = false;
-			for (int i = 0; i < UnityInput.touchCount; ++i)
-			{
-				Touch touch = UnityInput.GetTouch(i);
-
-				// Find existing touch, or create new one
-				TouchInfo existingTouch = m_Touches.FirstOrDefault(t => t.touchId == touch.fingerId);
-
-				if (existingTouch == null)
-				{
-					existingTouch = new TouchInfo
-					{
-						touchId = touch.fingerId,
-						startPosition = touch.position,
-						currentPosition = touch.position,
-						previousPosition = touch.position,
-						startTime = Time.realtimeSinceStartup,
-						startedOverUI = EventSystem.current.IsPointerOverGameObject(touch.fingerId)
-					};
-
-					m_Touches.Add(existingTouch);
-
-					// Sanity check
-					Debug.Assert(touch.phase == TouchPhase.Began);
-				}
-				switch (touch.phase)
-				{
-					case TouchPhase.Began:
-						touchPressedThisFrame = true;
-						if (pressed != null)
-						{
-							pressed(existingTouch);
-						}
-						break;
-
-					case TouchPhase.Moved:
-						bool wasDrag = existingTouch.isDrag;
-						UpdateMovingFinger(touch, existingTouch);
-
-						// Is this a drag?
-						existingTouch.isDrag = existingTouch.totalMovement >= dragThresholdTouch;
-
-						if (existingTouch.isDrag)
-						{
-							if (existingTouch.isHold)
-							{
-								existingTouch.wasHold = existingTouch.isHold;
-								existingTouch.isHold = false;
-							}
-							// Did it just start now?
-							if (!wasDrag)
-							{
-								if (startedDrag != null)
+								// Did it just start now?
+								if (!wasDrag)
 								{
-									startedDrag(existingTouch);
+									if (startedDrag != null)
+									{
+										startedDrag(mouseButton);
+									}
 								}
-							}
-							if (dragged != null)
-							{
-								dragged(existingTouch);
-							}
+								if (dragged != null)
+								{
+									dragged(mouseButton);
+								}
 
-							if (existingTouch.delta.sqrMagnitude > flickThreshold * flickThreshold)
-							{
-								existingTouch.flickVelocity =
-									(existingTouch.flickVelocity * (1 - k_FlickAccumulationFactor)) +
-									(existingTouch.delta * k_FlickAccumulationFactor);
+								// Flick?
+								if (moveDist > flickThreshold)
+								{
+									mouseButton.flickVelocity =
+										(mouseButton.flickVelocity * (1 - k_FlickAccumulationFactor)) +
+										(mouseButton.delta * k_FlickAccumulationFactor);
+								}
+								else
+								{
+									mouseButton.flickVelocity = Vector2.zero;
+								}
 							}
 							else
 							{
-								existingTouch.flickVelocity = Vector2.zero;
+								// Stationary?
+								if (!mouseButton.isHold &&
+									!mouseButton.isDrag &&
+									Time.realtimeSinceStartup - mouseButton.startTime >= holdTime)
+								{
+									mouseButton.isHold = true;
+									if (startedHold != null)
+									{
+										startedHold(mouseButton);
+									}
+								}
 							}
 						}
-						else
+					}
+					else // Mouse button not up
+					{
+						if (mouseButton.isDown) // Released
 						{
+							mouseButton.isDown = false;
+							// Quick enough (with no drift) to be a tap?
+							if (!mouseButton.isDrag &&
+								Time.realtimeSinceStartup - mouseButton.startTime < tapTime)
+							{
+								if (tapped != null)
+								{
+									tapped(mouseButton);
+								}
+							}
+							if (released != null)
+							{
+								released(mouseButton);
+							}
+						}
+					}
+				}
+
+				// Mouse wheel
+				if (Mathf.Abs(UnityInput.GetAxis("Mouse ScrollWheel")) > Mathf.Epsilon)
+				{
+					if (spunWheel != null)
+					{
+						spunWheel(new WheelInfo
+						{
+							zoomAmount = UnityInput.GetAxis("Mouse ScrollWheel") * mouseWheelSensitivity
+						});
+					}
+				}
+			}
+
+			/// <summary>
+			/// Update all touches
+			/// </summary>
+			void UpdateTouches()
+			{
+				touchPressedThisFrame = false;
+				for (int i = 0; i < UnityInput.touchCount; ++i)
+				{
+					Touch touch = UnityInput.GetTouch(i);
+
+					// Find existing touch, or create new one
+					TouchInfo existingTouch = m_Touches.FirstOrDefault(t => t.touchId == touch.fingerId);
+
+					if (existingTouch == null)
+					{
+						existingTouch = new TouchInfo
+						{
+							touchId = touch.fingerId,
+							startPosition = touch.position,
+							currentPosition = touch.position,
+							previousPosition = touch.position,
+							startTime = Time.realtimeSinceStartup,
+							startedOverUI = EventSystem.current.IsPointerOverGameObject(touch.fingerId)
+						};
+
+						m_Touches.Add(existingTouch);
+
+						// Sanity check
+						Debug.Assert(touch.phase == TouchPhase.Began);
+					}
+					switch (touch.phase)
+					{
+						case TouchPhase.Began:
+							touchPressedThisFrame = true;
+							if (pressed != null)
+							{
+								pressed(existingTouch);
+							}
+							break;
+
+						case TouchPhase.Moved:
+							bool wasDrag = existingTouch.isDrag;
+							UpdateMovingFinger(touch, existingTouch);
+
+							// Is this a drag?
+							existingTouch.isDrag = existingTouch.totalMovement >= dragThresholdTouch;
+
+							if (existingTouch.isDrag)
+							{
+								if (existingTouch.isHold)
+								{
+									existingTouch.wasHold = existingTouch.isHold;
+									existingTouch.isHold = false;
+								}
+								// Did it just start now?
+								if (!wasDrag)
+								{
+									if (startedDrag != null)
+									{
+										startedDrag(existingTouch);
+									}
+								}
+								if (dragged != null)
+								{
+									dragged(existingTouch);
+								}
+
+								if (existingTouch.delta.sqrMagnitude > flickThreshold * flickThreshold)
+								{
+									existingTouch.flickVelocity =
+										(existingTouch.flickVelocity * (1 - k_FlickAccumulationFactor)) +
+										(existingTouch.delta * k_FlickAccumulationFactor);
+								}
+								else
+								{
+									existingTouch.flickVelocity = Vector2.zero;
+								}
+							}
+							else
+							{
+								UpdateHoldingFinger(existingTouch);
+							}
+							break;
+
+						case TouchPhase.Canceled:
+						case TouchPhase.Ended:
+							// Could have moved a bit
+							UpdateMovingFinger(touch, existingTouch);
+							// Quick enough (with no drift) to be a tap?
+							if (!existingTouch.isDrag &&
+								Time.realtimeSinceStartup - existingTouch.startTime < tapTime)
+							{
+								if (tapped != null)
+								{
+									tapped(existingTouch);
+								}
+							}
+							if (released != null)
+							{
+								released(existingTouch);
+							}
+
+							// Remove from track list
+							m_Touches.Remove(existingTouch);
+							break;
+
+						case TouchPhase.Stationary:
+							UpdateMovingFinger(touch, existingTouch);
 							UpdateHoldingFinger(existingTouch);
-						}
-						break;
-
-					case TouchPhase.Canceled:
-					case TouchPhase.Ended:
-						// Could have moved a bit
-						UpdateMovingFinger(touch, existingTouch);
-						// Quick enough (with no drift) to be a tap?
-						if (!existingTouch.isDrag &&
-						    Time.realtimeSinceStartup - existingTouch.startTime < tapTime)
-						{
-							if (tapped != null)
-							{
-								tapped(existingTouch);
-							}
-						}
-						if (released != null)
-						{
-							released(existingTouch);
-						}
-
-						// Remove from track list
-						m_Touches.Remove(existingTouch);
-						break;
-
-					case TouchPhase.Stationary:
-						UpdateMovingFinger(touch, existingTouch);
-						UpdateHoldingFinger(existingTouch);
-						existingTouch.flickVelocity = Vector2.zero;
-						break;
+							existingTouch.flickVelocity = Vector2.zero;
+							break;
+					}
 				}
-			}
 
-			if (activeTouchCount >= 2 && (m_Touches[0].isDrag ||
-			                              m_Touches[1].isDrag))
-			{
-				if (pinched != null)
+				if (activeTouchCount >= 2 && (m_Touches[0].isDrag ||
+											  m_Touches[1].isDrag))
 				{
-					pinched(new PinchInfo
+					if (pinched != null)
 					{
-						touch1 = m_Touches[0],
-						touch2 = m_Touches[1]
-					});
+						pinched(new PinchInfo
+						{
+							touch1 = m_Touches[0],
+							touch2 = m_Touches[1]
+						});
+					}
 				}
 			}
-		}
 
-		/// <summary>
-		/// Update a TouchInfo that might be holding
-		/// </summary>
-		/// <param name="existingTouch"></param>
-		void UpdateHoldingFinger(PointerActionInfo existingTouch)
-		{
-			if (!existingTouch.isHold &&
-			    !existingTouch.isDrag &&
-			    Time.realtimeSinceStartup - existingTouch.startTime >= holdTime)
+			/// <summary>
+			/// Update a TouchInfo that might be holding
+			/// </summary>
+			/// <param name="existingTouch"></param>
+			void UpdateHoldingFinger(PointerActionInfo existingTouch)
 			{
-				existingTouch.isHold = true;
-				if (startedHold != null)
+				if (!existingTouch.isHold &&
+					!existingTouch.isDrag &&
+					Time.realtimeSinceStartup - existingTouch.startTime >= holdTime)
 				{
-					startedHold(existingTouch);
+					existingTouch.isHold = true;
+					if (startedHold != null)
+					{
+						startedHold(existingTouch);
+					}
 				}
 			}
-		}
 
-		/// <summary>
-		/// Update a TouchInfo with movement
-		/// </summary>
-		/// <param name="touch">The Unity touch object</param>
-		/// <param name="existingTouch">The object that's tracking Unity's touch</param>
-		void UpdateMovingFinger(Touch touch, PointerActionInfo existingTouch)
-		{
-			float dragDist = touch.deltaPosition.magnitude;
+			/// <summary>
+			/// Update a TouchInfo with movement
+			/// </summary>
+			/// <param name="touch">The Unity touch object</param>
+			/// <param name="existingTouch">The object that's tracking Unity's touch</param>
+			void UpdateMovingFinger(Touch touch, PointerActionInfo existingTouch)
+			{
+				float dragDist = touch.deltaPosition.magnitude;
 
-			existingTouch.previousPosition = existingTouch.currentPosition;
-			existingTouch.currentPosition = touch.position;
-			existingTouch.delta = touch.deltaPosition;
-			existingTouch.totalMovement += dragDist;
+				existingTouch.previousPosition = existingTouch.currentPosition;
+				existingTouch.currentPosition = touch.position;
+				existingTouch.delta = touch.deltaPosition;
+				existingTouch.totalMovement += dragDist;
+			}
 		}
 	}
 }

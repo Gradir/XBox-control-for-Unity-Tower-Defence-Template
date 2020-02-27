@@ -50,7 +50,7 @@ namespace Core.Input
 		{
 			get
 			{
-#if UNITY_STANDALONE || UNITY_EDITOR
+#if UNITY_EDITOR
 				return true;
 #else
 				return false;

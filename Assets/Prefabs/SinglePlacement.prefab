@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3911055813020725604
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 1833286653305402, guid: d3314db5900624b4c80e558a5dd2be2a,
+    type: 2}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3911055813020725605}
+  - component: {fileID: 3911055813020725595}
+  - component: {fileID: 3911055813020725594}
+  m_Layer: 8
+  m_Name: SinglePlacement
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3911055813020725605
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 4702762324537352, guid: d3314db5900624b4c80e558a5dd2be2a,
+    type: 2}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3911055813020725604}
+  m_LocalRotation: {x: -0, y: -0.28282964, z: -0, w: 0.95917016}
+  m_LocalPosition: {x: -2.01, y: 0.5, z: -14.21}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: -32.858, z: 0}
+--- !u!135 &3911055813020725595
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 135532121181471432, guid: d3314db5900624b4c80e558a5dd2be2a,
+    type: 2}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3911055813020725604}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3911055813020725594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 114653923524593216, guid: d3314db5900624b4c80e558a5dd2be2a,
+    type: 2}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3911055813020725604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17fbcc5a385a4c0398a25d0f3018c34a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  placementTilePrefab: {fileID: 114496876178851720, guid: 0789fdd77165244beb6bdbaeb2fb3258,
+    type: 3}
+  placementTilePrefabMobile: {fileID: 114496876178851720, guid: 0040958718f46439495b6df7f78b62ac,
+    type: 3}
