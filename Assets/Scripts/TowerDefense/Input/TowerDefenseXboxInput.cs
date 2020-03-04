@@ -144,16 +144,12 @@ namespace TowerDefense.Input
 			switch (button)
 			{
 				case XBoxButton.A:
-					Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "A"));
 					break;
 				case XBoxButton.B:
-					Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "B"));
 					break;
 				case XBoxButton.X:
-					Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "X"));
 					break;
 				case XBoxButton.Y:
-					Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "Y"));
 					break;
 				case XBoxButton.Start:
 					OnStartButtonPressed();
@@ -187,6 +183,7 @@ namespace TowerDefense.Input
 			//		}
 			//	}
 			//}
+
 			switch (m_GameUI.state)
 			{
 				case State.Normal:
@@ -202,9 +199,6 @@ namespace TowerDefense.Input
 				case State.BuildingWithDrag:
 				case State.Building:
 					m_GameUI.CancelGhostPlacement();
-					break;
-				case State.Paused:
-					pauseMenu.Pause();
 					break;
 			}
 		}

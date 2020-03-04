@@ -498,23 +498,24 @@ namespace Core.Input
 		private void UpdateXBoxButtons()
 		{
 			isAnyJoystickButtonPressed = false;
-			if (UnityInput.GetButton("XBoxStart"))
+
+			if (UnityInput.GetButtonUp("XBoxStart"))
 			{
 				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.Start);
 			}
-			if (UnityInput.GetButton("XBoxA"))
+			if (UnityInput.GetButtonUp("XBoxA"))
 			{
 				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.A);
 			}
-			if (UnityInput.GetButton("XBoxB"))
+			if (UnityInput.GetButtonUp("XBoxB"))
 			{
 				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.B);
 			}
-			if (UnityInput.GetButton("XBoxX"))
+			if (UnityInput.GetButtonUp("XBoxX"))
 			{
 				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.X);
 			}
-			if (UnityInput.GetButton("XBoxY"))
+			if (UnityInput.GetButtonUp("XBoxY"))
 			{
 				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.Y);
 			}
