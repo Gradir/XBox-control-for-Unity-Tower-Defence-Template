@@ -146,11 +146,6 @@ namespace Core.Input
 			base.Awake();
 			m_Touches = new List<TouchInfo>();
 
-			if (isAnyControllerConnected)
-			{
-
-			}
-
 			// Mouse specific initialization
 			if (UnityInput.mousePresent)
 			{
@@ -178,8 +173,8 @@ namespace Core.Input
 			string[] names = UnityInput.GetJoystickNames();
 			for (int x = 0; x < names.Length; x++)
 			{
-				// 19 = PS4, 33 = Xbox, 43 = Xbox
-				if (names[x].Length == 43)
+				// 19 = PS4, 33, 43 = Xbox
+				if (names[x].Length == 43 || names[x].Length == 33)
 				{
 					isAnyControllerConnected = true;
 				}

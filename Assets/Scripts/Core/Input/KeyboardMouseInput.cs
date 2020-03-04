@@ -51,7 +51,7 @@ namespace Core.Input
 			get
 			{
 #if UNITY_EDITOR
-				return true;
+				return false;
 #else
 				return false;
 #endif

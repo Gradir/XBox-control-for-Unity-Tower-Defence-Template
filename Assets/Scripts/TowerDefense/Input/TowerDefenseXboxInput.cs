@@ -1,12 +1,11 @@
 ﻿using Core.Input;
 using TowerDefense.Level;
 using TowerDefense.Towers;
+using TowerDefense.UI;
 using TowerDefense.UI.HUD;
 using UnityEngine;
-using UnityInput = UnityEngine.Input;
 using State = TowerDefense.UI.HUD.GameUI.State;
-using TowerDefense.UI;
-using TowerDefense.Towers.Placement;
+using UnityInput = UnityEngine.Input;
 
 namespace TowerDefense.Input
 {
@@ -21,6 +20,14 @@ namespace TowerDefense.Input
 		/// </summary>
 		bool isSearchingForNextArea;
 
+		public override bool isDefault
+		{
+			get
+			{
+				return true;
+			}
+		}
+
 		/// <summary>
 		/// Cached eference to gameUI
 		/// </summary>
@@ -32,7 +39,7 @@ namespace TowerDefense.Input
 		protected override void OnEnable()
 		{
 			base.OnEnable();
-			
+
 			m_GameUI = GetComponent<GameUI>();
 
 			if (InputController.instanceExists)
@@ -62,43 +69,43 @@ namespace TowerDefense.Input
 
 		protected override void Update()
 		{
+			base.Update();
 			if (controller.isAnyControllerConnected == false)
 			{
 				return;
 			}
-			base.Update();
 
 			UpdateXBoxButtons();
 
 			// place towers with X,Y,B buttons
-			if (LevelManager.instanceExists)
-			{
-				int towerLibraryCount = LevelManager.instance.towerLibrary.Count;
+			//if (LevelManager.instanceExists)
+			//{
+			//	int towerLibraryCount = LevelManager.instance.towerLibrary.Count;
 
-				// find the lowest value between 3 (Xbox X,Y,B buttons - for this level only!)
-				// and the amount of towers in the library
-				int count = Mathf.Min(3, towerLibraryCount);
-				KeyCode highestKey = KeyCode.Alpha1 + count;
+			//	// find the lowest value between 3 (Xbox X,Y,B buttons - for this level only!)
+			//	// and the amount of towers in the library
+			//	int count = Mathf.Min(3, towerLibraryCount);
+			//	KeyCode highestKey = KeyCode.Alpha1 + count;
 
-				for (var key = KeyCode.Alpha1; key < highestKey; key++)
-				{
-					// add offset for the KeyCode Alpha 1 index to find correct keycodes
-					if (UnityInput.GetKeyDown(key))
-					{
-						Tower controller = LevelManager.instance.towerLibrary[key - KeyCode.Alpha1];
-						if (LevelManager.instance.currency.CanAfford(controller.purchaseCost))
-						{
-							if (m_GameUI.isBuilding)
-							{
-								m_GameUI.CancelGhostPlacement();
-							}
-							GameUI.instance.SetToBuildMode(controller);
-							GameUI.instance.TryMoveGhost(InputController.instance.basicMouseInfo);
-						}
-						break;
-					}
-				}
-			}
+			//	for (var key = KeyCode.Alpha1; key < highestKey; key++)
+			//	{
+			//		// add offset for the KeyCode Alpha 1 index to find correct keycodes
+			//		if (UnityInput.GetKeyDown(key))
+			//		{
+			//			Tower controller = LevelManager.instance.towerLibrary[key - KeyCode.Alpha1];
+			//			if (LevelManager.instance.currency.CanAfford(controller.purchaseCost))
+			//			{
+			//				if (m_GameUI.isBuilding)
+			//				{
+			//					m_GameUI.CancelGhostPlacement();
+			//				}
+			//				GameUI.instance.SetToBuildMode(controller);
+			//				GameUI.instance.TryMoveGhost(InputController.instance.basicMouseInfo);
+			//			}
+			//			break;
+			//		}
+			//	}
+			//}
 		}
 
 		private float horizontalValue;
@@ -108,7 +115,70 @@ namespace TowerDefense.Input
 		/// </summary>
 		private void UpdateXBoxButtons()
 		{
-			// Escape handling
+			if (UnityInput.GetButtonDown("Fire1"))
+			{
+				Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "button: " + "A"));
+			}
+			if (UnityInput.GetButton("Fire2"))
+			{
+				print("button: " + "B");
+			}
+			if (UnityInput.GetButton("Fire3"))
+			{
+				print("button: " + "X");
+			}
+			if (UnityInput.GetButton("Jump"))
+			{
+				print("button: " + "Y");
+			}
+			if (UnityInput.GetButton("Fire1"))
+			{
+				print("button: " + "A");
+			}
+
+			var currentlySelected = placementManager.GetCurrentlySelectedArea();
+
+			var hor = UnityInput.GetAxis("Horizontal");
+			if (hor > thresholdForStick || hor < -thresholdForStick)
+			{
+				horizontalValue = hor;
+				isSearchingForNextArea = true;
+			}
+			var vert = UnityInput.GetAxis("Vertical");
+			if (vert > thresholdForStick || vert < -thresholdForStick)
+			{
+				verticalValue = vert;
+				isSearchingForNextArea = true;
+			}
+			Vector3 targetDirection = new Vector3(horizontalValue, 0, verticalValue);
+			//Debug.DrawRay(currentlySelected.transform.position, targetDirection, Color.red, 2);
+
+			if (isSearchingForNextArea && hor == 0 && vert == 0)
+			{
+				isSearchingForNextArea = false;
+				var toSelect = placementManager.GetClosestAreaToDirection(targetDirection.normalized);
+				placementManager.SelectArea(toSelect);
+			}
+
+
+			//if (UnityInput.GetButton("Start"))
+			//{
+			//	print("button: " + "START");
+
+			//	if (LevelManager.instanceExists)
+			//	{
+			//		var inst = LevelManager.instance;
+			//		if (inst.levelState != LevelState.Building)
+			//		{
+			//			pauseMenu.Pause();
+			//		}
+			//		else
+			//		{
+			//			pauseMenu.Unpause();
+			//		}
+			//	}
+			//}
+
 			if (UnityInput.GetButton("Start"))
 			{
 				switch (m_GameUI.state)
@@ -129,63 +199,6 @@ namespace TowerDefense.Input
 						break;
 				}
 			}
-			var currentlySelected = placementManager.GetCurrentlySelectedArea();
-
-			var hor = UnityInput.GetAxis("Horizontal");
-			if (hor != 0)
-			{
-				horizontalValue = hor;
-				isSearchingForNextArea = true;
-			}
-			var vert = UnityInput.GetAxis("Vertical");
-			if (vert != 0)
-			{
-				verticalValue = vert;
-				isSearchingForNextArea = true;
-			}
-			Vector3 targetDirection = new Vector3(horizontalValue, 0, verticalValue);
-			Debug.DrawRay(currentlySelected.transform.position, targetDirection, Color.red, 2);
-
-			if (hor == 0 && vert == 0)
-			{
-				if (isSearchingForNextArea)
-				{
-					isSearchingForNextArea = false;
-					var toSelect = placementManager.GetClosestAreaToDirection(targetDirection.normalized);
-					placementManager.SelectArea(toSelect);
-				}
-			}
-
-
-			if (UnityInput.GetButton("Fire1"))
-			{
-				print("button: " + "A");
-			}
-			if (UnityInput.GetButton("Fire2"))
-			{
-				print("button: " + "B");
-			}
-			if (UnityInput.GetButton("Fire3"))
-			{
-				print("button: " + "X");
-			}
-			if (UnityInput.GetButton("Jump"))
-			{
-				print("button: " + "Y");
-			}
-			if (UnityInput.GetButton("Fire1"))
-			{
-				print("button: " + "A");
-			}
-			if (UnityInput.GetButton("Start"))
-			{
-				print("button: " + "START");
-			}
-		}
-
-		private void StartSearchingForClosestArea()
-		{
-
 		}
 
 		/// <summary>
