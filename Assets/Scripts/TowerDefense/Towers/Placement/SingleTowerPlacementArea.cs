@@ -14,6 +14,11 @@ namespace TowerDefense.Towers.Placement
 		/// Visualisation prefab to instantiate
 		/// </summary>
 		public PlacementTile placementTilePrefab;
+
+		/// <summary>
+		/// Indicator that the area is selected
+		/// </summary>
+		public GameObject selectedAreaIndicator;
 		
 		/// <summary>
 		/// Visualisation prefab to instantiate on mobile platforms
@@ -29,6 +34,11 @@ namespace TowerDefense.Towers.Placement
 		/// If the area is occupied
 		/// </summary>
 		bool m_IsOccupied;
+
+		/// <summary>
+		/// If the area is selected
+		/// </summary>
+		bool m_IsSelected;
 
 		/// <summary>
 		/// Set up visualisation tile
@@ -93,6 +103,15 @@ namespace TowerDefense.Towers.Placement
 			{
 				m_SpawnedTile.SetState(PlacementTileState.Filled);
 			}
+		}
+
+		/// <summary>
+		/// Selects or deselects the area
+		/// </summary>
+		public void Select(bool selected)
+		{
+			m_IsSelected = selected;
+			selectedAreaIndicator.SetActive(selected);
 		}
 
 		/// <summary>

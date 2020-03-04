@@ -6,12 +6,21 @@ using UnityEngine;
 using UnityInput = UnityEngine.Input;
 using State = TowerDefense.UI.HUD.GameUI.State;
 using TowerDefense.UI;
+using TowerDefense.Towers.Placement;
 
 namespace TowerDefense.Input
 {
 	[RequireComponent(typeof(GameUI))]
 	public class TowerDefenseXboxInput : XBox360Input
 	{
+		[SerializeField] private PlacementManager placementManager;
+		private InputController controller;
+
+		/// <summary>
+		/// Is using Xbox controller to select tower placement area?
+		/// </summary>
+		bool isSearchingForNextArea;
+
 		/// <summary>
 		/// Cached eference to gameUI
 		/// </summary>
@@ -28,10 +37,10 @@ namespace TowerDefense.Input
 
 			if (InputController.instanceExists)
 			{
-				InputController controller = InputController.instance;
+				controller = InputController.instance;
 
-				controller.tapped += OnTap;
-				controller.mouseMoved += OnMouseMoved;
+				//controller.tapped += OnTap;
+				//controller.mouseMoved += OnMouseMoved;
 			}
 		}
 
@@ -45,49 +54,30 @@ namespace TowerDefense.Input
 				return;
 			}
 
-			InputController controller = InputController.instance;
+			controller = InputController.instance;
 
-			controller.tapped -= OnTap;
-			controller.mouseMoved -= OnMouseMoved;
+			//controller.tapped -= OnTap;
+			//controller.mouseMoved -= OnMouseMoved;
 		}
 
-		/// <summary>
-		/// Handle camera panning behaviour
-		/// </summary>
 		protected override void Update()
 		{
-			base.Update();
-			
-			// Escape handling
-			if (UnityInput.GetButton("Cancel"))
+			if (controller.isAnyControllerConnected == false)
 			{
-				switch (m_GameUI.state)
-				{
-					case State.Normal:
-						if (m_GameUI.isTowerSelected)
-						{
-							m_GameUI.DeselectTower();
-						}
-						else
-						{
-							m_GameUI.Pause();
-						}
-						break;
-					case State.BuildingWithDrag:
-					case State.Building:
-						m_GameUI.CancelGhostPlacement();
-						break;
-				}
+				return;
 			}
-			
-			// place towers with keyboard numbers
+			base.Update();
+
+			UpdateXBoxButtons();
+
+			// place towers with X,Y,B buttons
 			if (LevelManager.instanceExists)
 			{
 				int towerLibraryCount = LevelManager.instance.towerLibrary.Count;
 
-				// find the lowest value between 9 (keyboard numbers)
+				// find the lowest value between 3 (Xbox X,Y,B buttons - for this level only!)
 				// and the amount of towers in the library
-				int count = Mathf.Min(9, towerLibraryCount);
+				int count = Mathf.Min(3, towerLibraryCount);
 				KeyCode highestKey = KeyCode.Alpha1 + count;
 
 				for (var key = KeyCode.Alpha1; key < highestKey; key++)
@@ -108,29 +98,94 @@ namespace TowerDefense.Input
 						break;
 					}
 				}
-
-				// special case for 0 mapping to index 9
-				if (count < 10 && UnityInput.GetKeyDown(KeyCode.Alpha0))
-				{
-					Tower controller = LevelManager.instance.towerLibrary[9];
-					GameUI.instance.SetToBuildMode(controller);
-					GameUI.instance.TryMoveGhost(InputController.instance.basicMouseInfo);
-				}
 			}
 		}
 
+		private float horizontalValue;
+		private float verticalValue;
 		/// <summary>
-		/// Ghost follows pointer
+		/// Update XBox buttons
 		/// </summary>
-		void OnMouseMoved(PointerInfo pointer)
+		private void UpdateXBoxButtons()
 		{
-			// We only respond to mouse info
-			var mouseInfo = pointer as MouseCursorInfo;
-
-			if ((mouseInfo != null) && (m_GameUI.isBuilding))
+			// Escape handling
+			if (UnityInput.GetButton("Start"))
 			{
-				m_GameUI.TryMoveGhost(pointer, false);
+				switch (m_GameUI.state)
+				{
+					case State.Normal:
+						if (m_GameUI.isTowerSelected)
+						{
+							m_GameUI.DeselectTower();
+						}
+						else
+						{
+							m_GameUI.Pause();
+						}
+						break;
+					case State.BuildingWithDrag:
+					case State.Building:
+						m_GameUI.CancelGhostPlacement();
+						break;
+				}
 			}
+			var currentlySelected = placementManager.GetCurrentlySelectedArea();
+
+			var hor = UnityInput.GetAxis("Horizontal");
+			if (hor != 0)
+			{
+				horizontalValue = hor;
+				isSearchingForNextArea = true;
+			}
+			var vert = UnityInput.GetAxis("Vertical");
+			if (vert != 0)
+			{
+				verticalValue = vert;
+				isSearchingForNextArea = true;
+			}
+			Vector3 targetDirection = new Vector3(horizontalValue, 0, verticalValue);
+			Debug.DrawRay(currentlySelected.transform.position, targetDirection, Color.red, 2);
+
+			if (hor == 0 && vert == 0)
+			{
+				if (isSearchingForNextArea)
+				{
+					isSearchingForNextArea = false;
+					var toSelect = placementManager.GetClosestAreaToDirection(targetDirection.normalized);
+					placementManager.SelectArea(toSelect);
+				}
+			}
+
+
+			if (UnityInput.GetButton("Fire1"))
+			{
+				print("button: " + "A");
+			}
+			if (UnityInput.GetButton("Fire2"))
+			{
+				print("button: " + "B");
+			}
+			if (UnityInput.GetButton("Fire3"))
+			{
+				print("button: " + "X");
+			}
+			if (UnityInput.GetButton("Jump"))
+			{
+				print("button: " + "Y");
+			}
+			if (UnityInput.GetButton("Fire1"))
+			{
+				print("button: " + "A");
+			}
+			if (UnityInput.GetButton("Start"))
+			{
+				print("button: " + "START");
+			}
+		}
+
+		private void StartSearchingForClosestArea()
+		{
+
 		}
 
 		/// <summary>

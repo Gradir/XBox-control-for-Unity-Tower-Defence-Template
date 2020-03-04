@@ -178,12 +178,10 @@ namespace Core.Input
 			string[] names = UnityInput.GetJoystickNames();
 			for (int x = 0; x < names.Length; x++)
 			{
-				print(names[x].Length);
-				// 19 = PS4, 33 = Xbox
-				if (names[x].Length == 19 || names[x].Length == 33)
+				// 19 = PS4, 33 = Xbox, 43 = Xbox
+				if (names[x].Length == 43)
 				{
 					isAnyControllerConnected = true;
-					print(string.Format("<color=blue><b>{0}</b></color>", ps4ConnectedString));
 				}
 
 				if (basicMouseInfo != null)
