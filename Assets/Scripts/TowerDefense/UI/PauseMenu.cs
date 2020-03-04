@@ -12,6 +12,8 @@ namespace TowerDefense.UI
 	/// </summary>
 	public class PauseMenu : MonoBehaviour
 	{
+		[SerializeField] private GameObject firstButtonToSelectOnPause = null;
+
 		/// <summary>
 		/// Enum to represent state of pause menu
 		/// </summary>
@@ -191,7 +193,17 @@ namespace TowerDefense.UI
 		{
 			if (GameUI.instanceExists)
 			{
-				GameUI.instance.Pause();
+				if (GameUI.instance.state == GameUIState.Paused)
+				{
+					Unpause();
+
+					Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "should unpause"));
+				}
+				else
+				{
+					GameUI.instance.Pause();
+					UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(firstButtonToSelectOnPause, null);
+				}
 			}
 		}
 

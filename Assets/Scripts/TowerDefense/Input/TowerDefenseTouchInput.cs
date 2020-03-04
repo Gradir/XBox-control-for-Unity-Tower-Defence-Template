@@ -84,8 +84,10 @@ namespace TowerDefense.Input
 			}
 
 			// disable pop ups
-			confirmationButtons.canvasEnabled = false;
-			invalidButtons.canvasEnabled = false;
+			confirmationButtons.gameObject.SetActive(false);
+			//confirmationButtons.canvasEnabled = false;
+			invalidButtons.gameObject.SetActive(false);
+			//invalidButtons.canvasEnabled = false;
 		
 		}
 

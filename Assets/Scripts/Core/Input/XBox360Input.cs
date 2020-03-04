@@ -9,6 +9,15 @@ namespace Core.Input
 	/// </summary>
 	public class XBox360Input : CameraInputScheme
 	{
+		public enum XBoxButton
+		{
+			A,
+			B,
+			X,
+			Y,
+			Start
+		}
+
 		[SerializeField] protected float thresholdForStick = 0.05f;
 		[SerializeField] protected PauseMenu pauseMenu = null;
 		
@@ -19,16 +28,15 @@ namespace Core.Input
 		{
 			get
 			{
-				if (UnityInput.GetJoystickNames().Length == 0)
+				if (InputController.instanceExists == false || InputController.instance.isAnyControllerConnected == false)
 				{
 					return false;
 				}
-				return true;
-				//bool anyKey = UnityInput.anyKey;
-				//bool buttonPressedThisFrame = InputController.instance.mouseButtonPressedThisFrame;
-				//bool movedMouseThisFrame = InputController.instance.mouseMovedOnThisFrame;
-
-				//return (anyKey || buttonPressedThisFrame || movedMouseThisFrame);
+				bool anyJoystickAxis = UnityInput.GetAxis("JoystickHorizontal") != 0 ||
+					UnityInput.GetAxis("JoystickVertical") != 0 ||
+					UnityInput.GetAxis("JoystickHorizontal2") != 0 ||
+					UnityInput.GetAxis("JoystickVertical2") != 0;
+				return InputController.instance.isAnyJoystickButtonPressed || anyJoystickAxis;
 			}
 		}
 

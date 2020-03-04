@@ -139,7 +139,8 @@ namespace TowerDefense.UI
 		protected void Start()
 		{
 			LazyLoad();
-			endGameCanvas.enabled = false;
+			//endGameCanvas.enabled = false;
+			gameObject.SetActive(false);
 			nextLevelButton.enabled = false;
 			nextLevelButton.gameObject.SetActive(false);
 
@@ -153,7 +154,8 @@ namespace TowerDefense.UI
 		protected void OpenEndGameScreen(string endResultText)
 		{
 			LevelItem level = GameManager.instance.GetLevelForCurrentScene();
-			endGameCanvas.enabled = true;
+			//endGameCanvas.enabled = true;
+			gameObject.SetActive(true);
 
 			int score = CalculateFinalScore();
 			scorePanel.SetStars(score);

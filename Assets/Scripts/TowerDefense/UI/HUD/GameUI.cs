@@ -306,8 +306,9 @@ namespace TowerDefense.UI.HUD
 		public void Unpause()
 		{
 			SetState(State.Normal);
+			EventSystem.current.SetSelectedGameObject(null, null);
 		}
-		
+
 		/// <summary>
 		/// Changes the mode to drag
 		/// </summary>

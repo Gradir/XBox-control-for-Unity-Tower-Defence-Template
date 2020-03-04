@@ -137,9 +137,12 @@ namespace Core.Input
 		/// </summary>
 		public event Action<PointerInfo> mouseMoved;
 
+		/// <summary>
+		/// Event called whenever xBox button is pressed
+		/// </summary>
+		public event Action<XBox360Input.XBoxButton> xBoxButtonPressed;
 		public bool isAnyControllerConnected;
-		private const string ps4ConnectedString = "PS4 CONTROLLER IS CONNECTED";
-		private const string xBoxConnectedString = "XBOX CONTROLLER IS CONNECTED";
+		public bool isAnyJoystickButtonPressed;
 
 		protected override void Awake()
 		{
@@ -177,6 +180,7 @@ namespace Core.Input
 				if (names[x].Length == 43 || names[x].Length == 33)
 				{
 					isAnyControllerConnected = true;
+					UpdateXBoxButtons();
 				}
 
 				if (basicMouseInfo != null)
@@ -488,6 +492,31 @@ namespace Core.Input
 				existingTouch.currentPosition = touch.position;
 				existingTouch.delta = touch.deltaPosition;
 				existingTouch.totalMovement += dragDist;
+			}
+		}
+
+		private void UpdateXBoxButtons()
+		{
+			isAnyJoystickButtonPressed = false;
+			if (UnityInput.GetButton("XBoxStart"))
+			{
+				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.Start);
+			}
+			if (UnityInput.GetButton("XBoxA"))
+			{
+				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.A);
+			}
+			if (UnityInput.GetButton("XBoxB"))
+			{
+				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.B);
+			}
+			if (UnityInput.GetButton("XBoxX"))
+			{
+				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.X);
+			}
+			if (UnityInput.GetButton("XBoxY"))
+			{
+				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.Y);
 			}
 		}
 	}

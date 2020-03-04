@@ -7,8 +7,8 @@ namespace TowerDefense
 	public class PlacementManager : MonoBehaviour
 	{
 		[SerializeField] private float thresholdForVectorDifference = 0.5f;
-		[SerializeField] private SingleTowerPlacementArea[] placementAreas;
-		[SerializeField] private SingleTowerPlacementArea firstSelectedArea;
+		[SerializeField] private SingleTowerPlacementArea[] placementAreas = null;
+		[SerializeField] private SingleTowerPlacementArea firstSelectedArea = null;
 		private SingleTowerPlacementArea currentlySelectedArea;
 
 		private void Start()
@@ -93,15 +93,15 @@ namespace TowerDefense
 			List<float> distances = new List<float>();
 			// We take 3 locations that share the similar vector
 
-			Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "count: " + countOfLocationsBelowThreshold));
+			//Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "count: " + countOfLocationsBelowThreshold));
 			for (int i = 0; i < countOfLocationsBelowThreshold + 1; i++)
 			{
 				// We compare the distances and take the one with shortest
 				float distance = (placementByVectorDifference[differences[i]].transform.position - currentlySelectedArea.transform.position).magnitude;
 
-				Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "place: " + placementByVectorDifference[differences[i]].name
-					+ ", Distance: " + distance
-					+ ", Vector difference: " + differences[i]));
+				//Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "place: " + placementByVectorDifference[differences[i]].name
+				//	+ ", Distance: " + distance
+				//	+ ", Vector difference: " + differences[i]));
 				if (placementByDistance.ContainsKey(distance))
 				{
 					distance += 0.0001f;
@@ -111,7 +111,7 @@ namespace TowerDefense
 			}
 			distances.Sort();
 			// returns clostest
-			Debug.Log(string.Format("<color=green><b>{0}</b></color>", "Chose: " + placementByDistance[distances[0]].name));
+			//Debug.Log(string.Format("<color=green><b>{0}</b></color>", "Chose: " + placementByDistance[distances[0]].name));
 			return placementByDistance[distances[0]];
 		}
 

@@ -44,6 +44,8 @@ namespace Core.Input
 			}
 			m_DefaultScheme.Activate(null);
 			m_CurrentScheme = m_DefaultScheme;
+
+			Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "current scheme: " + m_CurrentScheme.GetType().ToString()));
 		}
 
 		/// <summary>
@@ -63,6 +65,7 @@ namespace Core.Input
 				}
 				scheme.Activate(m_CurrentScheme);
 				m_CurrentScheme = scheme;
+				Debug.Log(string.Format("<color=black><b>{0}</b></color>", "current scheme: " + m_CurrentScheme.GetType().ToString()));
 				break;
 			}
 		}

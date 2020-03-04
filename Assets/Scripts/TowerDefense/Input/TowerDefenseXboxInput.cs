@@ -1,9 +1,8 @@
 ﻿using Core.Input;
-using TowerDefense.Level;
-using TowerDefense.Towers;
 using TowerDefense.UI;
 using TowerDefense.UI.HUD;
 using UnityEngine;
+using static Core.Input.InputController;
 using State = TowerDefense.UI.HUD.GameUI.State;
 using UnityInput = UnityEngine.Input;
 
@@ -12,8 +11,7 @@ namespace TowerDefense.Input
 	[RequireComponent(typeof(GameUI))]
 	public class TowerDefenseXboxInput : XBox360Input
 	{
-		[SerializeField] private PlacementManager placementManager;
-		private InputController controller;
+		[SerializeField] private PlacementManager placementManager = null;
 
 		/// <summary>
 		/// Is using Xbox controller to select tower placement area?
@@ -44,10 +42,7 @@ namespace TowerDefense.Input
 
 			if (InputController.instanceExists)
 			{
-				controller = InputController.instance;
-
-				//controller.tapped += OnTap;
-				//controller.mouseMoved += OnMouseMoved;
+				InputController.instance.xBoxButtonPressed += UpdateXBoxButtons;
 			}
 		}
 
@@ -61,21 +56,18 @@ namespace TowerDefense.Input
 				return;
 			}
 
-			controller = InputController.instance;
-
-			//controller.tapped -= OnTap;
-			//controller.mouseMoved -= OnMouseMoved;
+			InputController.instance.xBoxButtonPressed -= UpdateXBoxButtons;
 		}
 
 		protected override void Update()
 		{
 			base.Update();
-			if (controller.isAnyControllerConnected == false)
+			if (InputController.instance.isAnyControllerConnected == false)
 			{
 				return;
 			}
 
-			UpdateXBoxButtons();
+			UpdateXBoxAxes();
 
 			// place towers with X,Y,B buttons
 			//if (LevelManager.instanceExists)
@@ -111,40 +103,19 @@ namespace TowerDefense.Input
 		private float horizontalValue;
 		private float verticalValue;
 		/// <summary>
-		/// Update XBox buttons
+		/// Update all of XBox Axis
 		/// </summary>
-		private void UpdateXBoxButtons()
+		private void UpdateXBoxAxes()
 		{
-			if (UnityInput.GetButtonDown("Fire1"))
-			{
-				Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "button: " + "A"));
-			}
-			if (UnityInput.GetButton("Fire2"))
-			{
-				print("button: " + "B");
-			}
-			if (UnityInput.GetButton("Fire3"))
-			{
-				print("button: " + "X");
-			}
-			if (UnityInput.GetButton("Jump"))
-			{
-				print("button: " + "Y");
-			}
-			if (UnityInput.GetButton("Fire1"))
-			{
-				print("button: " + "A");
-			}
-
 			var currentlySelected = placementManager.GetCurrentlySelectedArea();
 
-			var hor = UnityInput.GetAxis("Horizontal");
+			var hor = UnityInput.GetAxis("JoystickHorizontal");
 			if (hor > thresholdForStick || hor < -thresholdForStick)
 			{
 				horizontalValue = hor;
 				isSearchingForNextArea = true;
 			}
-			var vert = UnityInput.GetAxis("Vertical");
+			var vert = UnityInput.GetAxis("JoystickVertical");
 			if (vert > thresholdForStick || vert < -thresholdForStick)
 			{
 				verticalValue = vert;
@@ -160,7 +131,45 @@ namespace TowerDefense.Input
 				placementManager.SelectArea(toSelect);
 			}
 
+			var hor2 = UnityInput.GetAxis("JoystickHorizontal2");
+			var ver2 = UnityInput.GetAxis("JoystickVertical2");
+		}
 
+		/// <summary>
+		/// Update XBox buttons
+		/// </summary>
+		private void UpdateXBoxButtons(XBoxButton button)
+		{
+			InputController.instance.isAnyJoystickButtonPressed = true;
+			switch (button)
+			{
+				case XBoxButton.A:
+					Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "A"));
+					break;
+				case XBoxButton.B:
+					Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "B"));
+					break;
+				case XBoxButton.X:
+					Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "X"));
+					break;
+				case XBoxButton.Y:
+					Debug.Log(string.Format("<color=blue><b>{0}</b></color>", "Y"));
+					break;
+				case XBoxButton.Start:
+					OnStartButtonPressed();
+					break;
+				default:
+					break;
+			}
+		}
+
+		private void OnStartBackPressed()
+		{
+
+		}
+
+		private void OnStartButtonPressed()
+		{
 			//if (UnityInput.GetButton("Start"))
 			//{
 			//	print("button: " + "START");
@@ -178,26 +187,25 @@ namespace TowerDefense.Input
 			//		}
 			//	}
 			//}
-
-			if (UnityInput.GetButton("Start"))
+			switch (m_GameUI.state)
 			{
-				switch (m_GameUI.state)
-				{
-					case State.Normal:
-						if (m_GameUI.isTowerSelected)
-						{
-							m_GameUI.DeselectTower();
-						}
-						else
-						{
-							m_GameUI.Pause();
-						}
-						break;
-					case State.BuildingWithDrag:
-					case State.Building:
-						m_GameUI.CancelGhostPlacement();
-						break;
-				}
+				case State.Normal:
+					if (m_GameUI.isTowerSelected)
+					{
+						m_GameUI.DeselectTower();
+					}
+					else 
+					{
+						pauseMenu.Pause();
+					}
+					break;
+				case State.BuildingWithDrag:
+				case State.Building:
+					m_GameUI.CancelGhostPlacement();
+					break;
+				case State.Paused:
+					pauseMenu.Pause();
+					break;
 			}
 		}
 

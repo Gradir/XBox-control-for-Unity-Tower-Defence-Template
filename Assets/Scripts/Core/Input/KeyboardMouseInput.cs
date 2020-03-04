@@ -35,11 +35,15 @@ namespace Core.Input
 				{
 					return false;
 				}
+				bool wsad = UnityInput.GetKey(KeyCode.W) ||
+					UnityInput.GetKey(KeyCode.S) ||
+					UnityInput.GetKey(KeyCode.A) ||
+					UnityInput.GetKey(KeyCode.D);
 				bool anyKey = UnityInput.anyKey;
 				bool buttonPressedThisFrame = InputController.instance.mouseButtonPressedThisFrame;
 				bool movedMouseThisFrame = InputController.instance.mouseMovedOnThisFrame;
 
-				return (anyKey || buttonPressedThisFrame || movedMouseThisFrame);
+				return (wsad || buttonPressedThisFrame || movedMouseThisFrame);
 			}
 		}
 
