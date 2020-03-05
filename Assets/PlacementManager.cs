@@ -21,6 +21,11 @@ namespace TowerDefense
 			return currentlySelectedArea;
 		}
 
+		public bool isCurrentAreaOccupied()
+		{
+			return currentlySelectedArea.isOccupied;
+		}
+
 		public SingleTowerPlacementArea GetClosestAreaToDirection(Vector3 targetDirection)
 		{
 			List<SingleTowerPlacementArea> vectorsToAllAreas = new List<SingleTowerPlacementArea>();

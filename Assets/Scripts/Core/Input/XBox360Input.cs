@@ -15,7 +15,8 @@ namespace Core.Input
 			B,
 			X,
 			Y,
-			Start
+			Start,
+			Back
 		}
 
 		[SerializeField] protected float thresholdForStick = 0.05f;
@@ -36,7 +37,7 @@ namespace Core.Input
 					UnityInput.GetAxis("JoystickVertical") != 0 ||
 					UnityInput.GetAxis("JoystickHorizontal2") != 0 ||
 					UnityInput.GetAxis("JoystickVertical2") != 0;
-				return InputController.instance.isAnyJoystickButtonPressed || anyJoystickAxis;
+				return /*InputController.instance.isAnyJoystickButtonPressed ||*/ anyJoystickAxis;
 			}
 		}
 

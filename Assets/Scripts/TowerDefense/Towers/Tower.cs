@@ -101,7 +101,24 @@ namespace TowerDefense.Towers
 			{
 				transform.position = placementArea.GridToWorld(destination, dimensions);
 				transform.rotation = placementArea.transform.rotation;
-				targetArea.Occupy(destination, dimensions);
+				targetArea.Occupy(destination, dimensions, this);
+			}
+
+			SetLevel(0);
+			if (LevelManager.instanceExists)
+			{
+				LevelManager.instance.levelStateChanged += OnLevelStateChanged;
+			}
+		}
+
+		public virtual void Initialize(IPlacementArea targetArea)
+		{
+			placementArea = targetArea;
+			if (targetArea != null)
+			{
+				transform.position = placementArea.transform.position;
+				transform.rotation = placementArea.transform.rotation;
+				(placementArea as SingleTowerPlacementArea).Occupy(dimensions, this);
 			}
 
 			SetLevel(0);

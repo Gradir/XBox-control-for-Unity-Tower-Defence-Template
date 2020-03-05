@@ -79,7 +79,9 @@ namespace TowerDefense.UI.HUD
 			/// <summary>
 			/// The game is in 'build mode' and the player is dragging the ghost tower
 			/// </summary>
-			BuildingWithDrag
+			BuildingWithDrag,
+
+			BuildingMenu
 		}
 
 		/// <summary>
@@ -197,7 +199,7 @@ namespace TowerDefense.UI.HUD
 		{
 			if (!isBuilding)
 			{
-				throw new InvalidOperationException("Can't cancel out of ghost placement when not in the building state.");
+				//throw new InvalidOperationException("Can't cancel out of ghost placement when not in the building state.");
 			}
 
 			if (buildInfoUI != null)
@@ -266,6 +268,8 @@ namespace TowerDefense.UI.HUD
 					break;
 				case State.BuildingWithDrag:
 					break;
+				case State.BuildingMenu:
+					break;
 				case State.Paused:
 				case State.GameOver:
 					if (oldState == State.Building)
@@ -298,6 +302,11 @@ namespace TowerDefense.UI.HUD
 		public void Pause()
 		{
 			SetState(State.Paused);
+		}
+
+		public void SetBuildingMenuState()
+		{
+			SetState(State.BuildingMenu);
 		}
 
 		/// <summary>
@@ -347,7 +356,7 @@ namespace TowerDefense.UI.HUD
 		{
 			if (state != State.Normal)
 			{
-				throw new InvalidOperationException("Trying to enter Build mode when not in Normal mode");
+				//throw new InvalidOperationException("Trying to enter Build mode when not in Normal mode");
 			}
 			
 			if (m_CurrentTower != null)
@@ -426,7 +435,9 @@ namespace TowerDefense.UI.HUD
 		{
 			if (state != State.Normal)
 			{
-				throw new InvalidOperationException("Trying to select whilst not in a normal state");
+				//throw new InvalidOperationException("Trying to select whilst not in a normal state");
+
+				Debug.Log(string.Format("<color=blue><b>{0}</b></color>", state));
 			}
 			DeselectTower();
 			currentSelectedTower = tower;
@@ -484,7 +495,7 @@ namespace TowerDefense.UI.HUD
 		{
 			if (state != State.Normal)
 			{
-				throw new InvalidOperationException("Trying to sell tower whilst not in Normal state");
+				//throw new InvalidOperationException("Trying to sell tower whilst not in Normal state");
 			}
 			if (currentSelectedTower == null)
 			{
@@ -561,7 +572,7 @@ namespace TowerDefense.UI.HUD
 		{
 			if (state != State.Normal)
 			{
-				throw new InvalidOperationException("Trying to deselect tower whilst not in Normal state");
+				//throw new InvalidOperationException("Trying to deselect tower whilst not in Normal state");
 			}
 			if (currentSelectedTower != null)
 			{

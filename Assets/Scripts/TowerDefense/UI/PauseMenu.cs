@@ -175,7 +175,7 @@ namespace TowerDefense.UI
 				return;
 			}
 
-			if (UnityEngine.Input.GetKeyDown(KeyCode.Escape) || UnityEngine.Input.GetButtonUp("XBoxStart") && GameUI.instance.state == GameUIState.Paused)
+			if (UnityEngine.Input.GetKeyDown(KeyCode.Escape) || UnityEngine.Input.GetButtonUp("XBoxBack") && GameUI.instance.state == GameUIState.Paused)
 			{
 				Unpause();
 			}

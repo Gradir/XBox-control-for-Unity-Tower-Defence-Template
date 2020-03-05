@@ -130,7 +130,7 @@ namespace TowerDefense.Towers.Placement
 		/// </summary>
 		/// <param name="gridPos">The grid location</param>
 		/// <param name="size">The size of the item</param>
-		public void Occupy(IntVector2 gridPos, IntVector2 size)
+		public void Occupy(IntVector2 gridPos, IntVector2 size, Tower t)
 		{
 			IntVector2 extents = gridPos + size;
 

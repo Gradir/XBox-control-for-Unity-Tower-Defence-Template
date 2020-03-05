@@ -14,6 +14,7 @@ namespace TowerDefense.UI.HUD
 	[RequireComponent(typeof(RectTransform))]
 	public class TowerSpawnButton : MonoBehaviour, IDragHandler
 	{
+		[SerializeField] private Outline outline = null;
 		/// <summary>
 		/// The text attached to the button
 		/// </summary>
@@ -120,6 +121,15 @@ namespace TowerDefense.UI.HUD
 			{
 				m_Currency.currencyChanged -= UpdateButton;
 			}
+		}
+
+		public void OnSelect()
+		{
+			outline.enabled = true;
+		}
+		public void OnDeselect()
+		{
+			outline.enabled = false;
 		}
 
 		/// <summary>

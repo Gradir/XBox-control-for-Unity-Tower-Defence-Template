@@ -503,6 +503,10 @@ namespace Core.Input
 			{
 				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.Start);
 			}
+			if (UnityInput.GetButtonUp("XBoxBack"))
+			{
+				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.Back);
+			}
 			if (UnityInput.GetButtonUp("XBoxA"))
 			{
 				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.A);

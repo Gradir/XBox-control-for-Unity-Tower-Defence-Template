@@ -1,4 +1,5 @@
-﻿using TowerDefense.Level;
+﻿using System.Collections.Generic;
+using TowerDefense.Level;
 using TowerDefense.Towers;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ namespace TowerDefense.UI.HUD
 	/// </summary>
 	public class BuildSidebar : MonoBehaviour
 	{
+		[SerializeField] private GameObject startButton = null;
+		public List<TowerSpawnButton> buttons = new List<TowerSpawnButton>();
 		/// <summary>
 		/// The prefab spawned for each button
 		/// </summary>
@@ -29,6 +32,24 @@ namespace TowerDefense.UI.HUD
 				button.InitializeButton(tower);
 				button.buttonTapped += OnButtonTapped;
 				button.draggedOff += OnButtonDraggedOff;
+				buttons.Add(button);
+			}
+			startButton.SetActive(true);
+		}
+
+		public void SelectButton(int buttonId)
+		{
+			for (int i = 0; i < buttons.Count; i++)
+			{
+				var currentButton = buttons[i];
+				if (i == buttonId)
+				{
+					currentButton.OnSelect();
+				}
+				else
+				{
+					currentButton.OnDeselect();
+				}
 			}
 		}
 
@@ -81,6 +102,7 @@ namespace TowerDefense.UI.HUD
 			{
 				LevelManager.instance.BuildingCompleted();
 			}
+			startButton.SetActive(false);
 		}
 
 		/// <summary>

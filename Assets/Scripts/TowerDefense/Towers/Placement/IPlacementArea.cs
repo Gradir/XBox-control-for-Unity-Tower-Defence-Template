@@ -36,7 +36,7 @@ namespace TowerDefense.Towers.Placement
 		/// </summary>
 		/// <param name="gridPos">The grid location</param>
 		/// <param name="size">The size of the item</param>
-		void Occupy(IntVector2 gridPos, IntVector2 size);
+		void Occupy(IntVector2 gridPos, IntVector2 size, Tower t);
 
 		/// <summary>
 		/// Clear the given space on this placement area

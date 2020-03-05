@@ -43,7 +43,7 @@ namespace Core.Input
 				bool buttonPressedThisFrame = InputController.instance.mouseButtonPressedThisFrame;
 				bool movedMouseThisFrame = InputController.instance.mouseMovedOnThisFrame;
 
-				return (wsad || buttonPressedThisFrame || movedMouseThisFrame);
+				return (wsad || UnityInput.GetMouseButton(0) || UnityInput.GetMouseButton(1) || movedMouseThisFrame);
 			}
 		}
 

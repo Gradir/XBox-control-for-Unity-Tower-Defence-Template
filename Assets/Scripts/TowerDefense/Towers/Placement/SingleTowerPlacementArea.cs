@@ -33,7 +33,12 @@ namespace TowerDefense.Towers.Placement
 		/// <summary>
 		/// If the area is occupied
 		/// </summary>
-		bool m_IsOccupied;
+		public bool isOccupied;
+
+		/// <summary>
+		/// Gets the tower occupying this area
+		/// </summary>
+		public Tower towerHere;
 
 		/// <summary>
 		/// If the area is selected
@@ -87,7 +92,7 @@ namespace TowerDefense.Towers.Placement
 		/// <param name="size">The size of the item</param>
 		public TowerFitStatus Fits(IntVector2 gridPos, IntVector2 size)
 		{
-			return m_IsOccupied ? TowerFitStatus.Overlaps : TowerFitStatus.Fits;
+			return isOccupied ? TowerFitStatus.Overlaps : TowerFitStatus.Fits;
 		}
 
 		/// <summary>
@@ -95,9 +100,21 @@ namespace TowerDefense.Towers.Placement
 		/// </summary>
 		/// <param name="gridPos"></param>
 		/// <param name="size"></param>
-		public void Occupy(IntVector2 gridPos, IntVector2 size)
+		public void Occupy(IntVector2 gridPos, IntVector2 size, Tower t)
 		{
-			m_IsOccupied = true;
+			towerHere = t;
+			isOccupied = true;
+
+			if (m_SpawnedTile != null)
+			{
+				m_SpawnedTile.SetState(PlacementTileState.Filled);
+			}
+		}
+
+		public void Occupy(IntVector2 size, Tower tower)
+		{
+			isOccupied = true;
+			towerHere = tower;
 
 			if (m_SpawnedTile != null)
 			{
@@ -121,7 +138,7 @@ namespace TowerDefense.Towers.Placement
 		/// <param name="size"></param>
 		public void Clear(IntVector2 gridPos, IntVector2 size)
 		{
-			m_IsOccupied = false;
+			isOccupied = false;
 
 			if (m_SpawnedTile != null)
 			{
