@@ -141,7 +141,7 @@ namespace TowerDefense.Input
 						selectedTowerTypeButtonId--;
 					}
 
-					SelectTowerType(selectedTowerTypeButtonId);
+					SelectTowerType(Mathf.Clamp(selectedTowerTypeButtonId, 0, 2));
 				}
 			}
 			if (hor2 == 0)
@@ -224,7 +224,10 @@ namespace TowerDefense.Input
 			{
 				return;
 			}
-			selectedTowerType = LevelManager.instance.towerLibrary[id];
+			if (LevelManager.instance.towerLibrary[id] != null)
+			{
+				selectedTowerType = LevelManager.instance.towerLibrary[id];
+			}
 			buildSidebar.SelectButton(id);
 			//SelectTowerType(selectedTowerType);
 		}
