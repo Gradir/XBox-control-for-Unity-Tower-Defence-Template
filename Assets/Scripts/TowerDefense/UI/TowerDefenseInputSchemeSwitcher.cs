@@ -61,7 +61,7 @@ namespace TowerDefense.UI
 			{
 				return;
 			}
-			if (newState == State.Paused || newState == State.BuildingMenu)
+			if (newState == State.Paused)
 			{
 				m_CurrentScheme.Deactivate(null);
 			}

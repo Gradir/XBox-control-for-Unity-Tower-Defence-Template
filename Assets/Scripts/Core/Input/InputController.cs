@@ -507,7 +507,7 @@ namespace Core.Input
 			{
 				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.Back);
 			}
-			if (UnityInput.GetButtonUp("XBoxA"))
+			if (UnityInput.GetButtonDown("XBoxA"))
 			{
 				xBoxButtonPressed?.Invoke(XBox360Input.XBoxButton.A);
 			}

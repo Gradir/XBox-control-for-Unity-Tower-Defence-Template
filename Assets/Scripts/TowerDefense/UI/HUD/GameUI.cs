@@ -508,6 +508,12 @@ namespace TowerDefense.UI.HUD
 				currentSelectedTower.Sell();
 			}
 			DeselectTower();
+			Invoke("SetNormalState", 0.1f);
+		}
+
+		public void SetNormalState()
+		{
+			SetState(State.Normal);
 		}
 
 		/// <summary>

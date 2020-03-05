@@ -1,7 +1,6 @@
 ﻿using Core.Input;
 using TowerDefense.Level;
 using TowerDefense.Towers;
-using TowerDefense.UI;
 using TowerDefense.UI.HUD;
 using UnityEngine;
 using State = TowerDefense.UI.HUD.GameUI.State;
@@ -86,6 +85,7 @@ namespace TowerDefense.Input
 
 		private float horizontalValue;
 		private float verticalValue;
+		private bool justSwitchedButtons;
 		/// <summary>
 		/// Update all of XBox Axis
 		/// </summary>
@@ -122,22 +122,31 @@ namespace TowerDefense.Input
 			var hor2 = UnityInput.GetAxis("JoystickHorizontal2");
 			var ver2 = UnityInput.GetAxis("JoystickVertical2");
 
-			if (hor2 > thresholdForStick * 2)
+			if (justSwitchedButtons == false)
 			{
-				if (selectedTowerTypeButtonId < 2)
+				if (hor2 > thresholdForStick * 2)
 				{
-					selectedTowerTypeButtonId++;
+					justSwitchedButtons = true;
+					if (selectedTowerTypeButtonId < 2)
+					{
+						selectedTowerTypeButtonId++;
+					}
+					SelectTowerType(selectedTowerTypeButtonId);
 				}
-				SelectTowerType(selectedTowerTypeButtonId);
+				else if (hor2 < -thresholdForStick * 2)
+				{
+					justSwitchedButtons = true;
+					if (selectedTowerTypeButtonId > 0)
+					{
+						selectedTowerTypeButtonId--;
+					}
+
+					SelectTowerType(selectedTowerTypeButtonId);
+				}
 			}
-			else if (hor2 < -thresholdForStick * 2)
+			if (hor2 == 0)
 			{
-				if (selectedTowerTypeButtonId >= 0)
-				{
-					selectedTowerTypeButtonId--;
-				}
-				
-				SelectTowerType(selectedTowerTypeButtonId);
+				justSwitchedButtons = false;
 			}
 		}
 
@@ -157,6 +166,10 @@ namespace TowerDefense.Input
 			switch (button)
 			{
 				case XBoxButton.A:
+					if (m_GameUI.state == State.BuildingMenu)
+					{
+						return;
+					}
 					if (placementManager.isCurrentAreaOccupied() == false)
 					{
 						if (selectedTowerType == null)
@@ -176,17 +189,9 @@ namespace TowerDefense.Input
 						var tower = placementManager.GetCurrentlySelectedArea().towerHere;
 						if (tower != null)
 						{
-							if (m_GameUI.state == State.BuildingMenu)
-							{
-								m_GameUI.DeselectTower();
-								m_GameUI.Unpause();
-							}
-							else
-							{
-								m_GameUI.SelectTower(tower);
-								m_GameUI.SetBuildingMenuState();
-								UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(firstSelectedTowerMenuButton, null);
-							}
+							m_GameUI.SelectTower(tower);
+							m_GameUI.SetBuildingMenuState();
+							UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(firstSelectedTowerMenuButton, null);
 						}
 					}
 					break;
@@ -241,6 +246,10 @@ namespace TowerDefense.Input
 				case State.BuildingWithDrag:
 				case State.Building:
 					m_GameUI.CancelGhostPlacement();
+					break;
+				case State.BuildingMenu:
+					m_GameUI.DeselectTower();
+					m_GameUI.Unpause();
 					break;
 			}
 		}
