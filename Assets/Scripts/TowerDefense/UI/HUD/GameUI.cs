@@ -464,7 +464,7 @@ namespace TowerDefense.UI.HUD
 		{
 			if (state != State.Normal)
 			{
-				throw new InvalidOperationException("Trying to upgrade whilst not in Normal state");
+				//throw new InvalidOperationException("Trying to upgrade whilst not in Normal state");
 			}
 			if (currentSelectedTower == null)
 			{
