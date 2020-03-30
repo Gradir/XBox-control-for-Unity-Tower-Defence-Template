@@ -436,8 +436,6 @@ namespace TowerDefense.UI.HUD
 			if (state != State.Normal)
 			{
 				//throw new InvalidOperationException("Trying to select whilst not in a normal state");
-
-				Debug.Log(string.Format("<color=blue><b>{0}</b></color>", state));
 			}
 			DeselectTower();
 			currentSelectedTower = tower;
@@ -1029,7 +1027,7 @@ namespace TowerDefense.UI.HUD
 		/// <exception cref="ArgumentNullException">
 		/// Throws exception if the <paramref name="towerToBuild"/> is null
 		/// </exception>
-		void SetUpGhostTower([NotNull] Tower towerToBuild)
+		public void SetUpGhostTower([NotNull] Tower towerToBuild)
 		{
 			if (towerToBuild == null)
 			{

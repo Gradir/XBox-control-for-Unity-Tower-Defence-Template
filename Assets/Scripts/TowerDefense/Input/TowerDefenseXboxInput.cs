@@ -192,14 +192,15 @@ namespace TowerDefense.Input
 							m_GameUI.SelectTower(tower);
 							m_GameUI.SetBuildingMenuState();
 							UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(firstSelectedTowerMenuButton, null);
+							m_GameUI.SetUpGhostTower(tower);
 						}
 					}
 					break;
 				case XBoxButton.Start:
-					OnStartButtonPressed();
+					OnStartPressed();
 					break;
 				case XBoxButton.Back:
-					OnStartBackPressed();
+					OnBackPressed();
 					break;
 				case XBoxButton.X:
 					selectedTowerTypeButtonId = 0;
@@ -229,10 +230,19 @@ namespace TowerDefense.Input
 				selectedTowerType = LevelManager.instance.towerLibrary[id];
 			}
 			buildSidebar.SelectButton(id);
-			//SelectTowerType(selectedTowerType);
+			SelectTowerType(selectedTowerType);
 		}
 
-		private void OnStartBackPressed()
+		private void SelectTowerType(Tower t)
+		{
+			if (LevelManager.instanceExists == false)
+			{
+				return;
+			}
+			m_GameUI.SetToBuildMode(t);
+		}
+
+		private void OnBackPressed()
 		{
 			switch (m_GameUI.state)
 			{
@@ -257,7 +267,7 @@ namespace TowerDefense.Input
 			}
 		}
 
-		private void OnStartButtonPressed()
+		private void OnStartPressed()
 		{
 			if (LevelManager.instanceExists == false || LevelManager.instance.levelState != LevelState.Building)
 			{

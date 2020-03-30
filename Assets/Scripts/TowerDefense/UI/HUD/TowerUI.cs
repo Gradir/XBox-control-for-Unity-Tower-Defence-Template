@@ -113,6 +113,7 @@ namespace TowerDefense.UI.HUD
 			//m_Canvas.enabled = false;
 			gameObject.SetActive(false);
 			LevelManager.instance.currency.currencyChanged -= OnCurrencyChanged;
+			GameUI.instance.SetNormalState();
 		}
 
 		/// <summary>
